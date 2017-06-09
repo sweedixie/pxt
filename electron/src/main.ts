@@ -3,7 +3,7 @@
 "use strict";
 
 import * as Promise from "bluebird";
-import { app, BrowserWindow, dialog, Menu } from "electron";
+import { app, BrowserWindow, dialog, ipcMain, Menu } from "electron";
 import * as Utils from "./util/electronutils";
 import * as I from "./typings/interfaces";
 import * as minimist from "minimist";
@@ -148,6 +148,10 @@ function main(): void {
     });
     Utils.retryAsync(startLocalServer, () => true, 50, "Unable to find free TCP port", 20)
         .then(() => {
+            ipcMain.on("ping", (event, message) => {
+                console.log(`Website pinged with the following message: ${message}`);
+                win.webContents.send("pong", "Hello from Electron main.ts");
+            });
             createWindow();
 
             if (isUpdateEnabled()) {

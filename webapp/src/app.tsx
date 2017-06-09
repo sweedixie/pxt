@@ -2175,6 +2175,13 @@ $(document).ready(() => {
 
     const ipcRenderer = (window as any).ipcRenderer;
     if (ipcRenderer)
+        // IPC Renderer example
+        ipcRenderer.send("ping", "hello from app.tsx");
+        ipcRenderer.on("pong", (event: any, message: any) => {
+            console.log(`Received reply from app shell with the following message: ${message}`);
+        });
+        // ... End example
+        
         ipcRenderer.on('responseFromApp', (event: any, message: any) => {
             // IPC renderer sends a string, we need to convert to an object to send to the simulator iframe
             try {
