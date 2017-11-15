@@ -22,8 +22,6 @@ export class Editor extends srceditor.Editor {
     maxConsoleLineLength: number = 255
     maxConsoleEntries: number = 100
     active: boolean = true
-    maxChartTime: number = 18000
-    chartDropper: number
 
     //refs
     startPauseButton: StartPauseButton
@@ -35,7 +33,7 @@ export class Editor extends srceditor.Editor {
     }
 
     hasHistory() { return false; }
-    
+
     hasEditorToolbar() {
         return false
     }
@@ -44,11 +42,9 @@ export class Editor extends srceditor.Editor {
         this.isVisible = b;
         if (this.isVisible) {
             this.startRecording()
-            this.chartDropper = setInterval(this.dropStaleCharts.bind(this), 5000)
         }
         else {
             this.pauseRecording()
-            clearInterval(this.chartDropper)
         }
     }
 
@@ -160,17 +156,6 @@ export class Editor extends srceditor.Editor {
                 if (this.consoleRoot) this.consoleRoot.classList.remove("noconsole");
             }
         }
-    }
-
-    dropStaleCharts() {
-        let now = Util.now()
-        this.charts.forEach((chart) => {
-            if (now - chart.lastUpdatedTime > this.maxChartTime) {
-                this.chartRoot.removeChild(chart.rootElement)
-                chart.isStale = true
-            }
-        })
-        this.charts = this.charts.filter(c => !c.isStale)
     }
 
     pauseRecording() {
