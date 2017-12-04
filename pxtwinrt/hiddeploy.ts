@@ -14,6 +14,10 @@ namespace pxt.winrt {
         public dev: Windows.Devices.HumanInterfaceDevice.HidDevice;
 
         constructor() {
+            const app = Windows.UI.WebUI.WebUIApplication as any;
+            app.addEventListener("suspending", function () {
+                this.close();
+            }, false);
         }
 
         error(msg: string) {
@@ -25,17 +29,24 @@ namespace pxt.winrt {
                 .then(() => this.initAsync());
         }
 
-        disconnectAsync(): Promise<void> {
+        close() {
             if (this.dev) {
-                this.dev.close();
+                pxt.debug(`hf2: disconnecting`)
+                const d = this.dev;
                 delete this.dev;
+                d.close();
             }
+        }
+
+        disconnectAsync(): Promise<void> {
+            this.close();
             return Promise.resolve();
         }
 
         sendPacketAsync(pkt: Uint8Array): Promise<void> {
             if (!this.dev) return Promise.resolve();
 
+            pxt.debug(`hf2: sending ${pkt.length} bytes`)
             const ar: number[] = [0];
             for (let i = 0; i < Math.max(pkt.length, 64); ++i)
                 ar.push(pkt[i] || 0);
@@ -71,21 +82,21 @@ namespace pxt.winrt {
             return getDevicesPromise
                 .then((devices) => {
                     if (!devices || !devices[0]) {
-                        pxt.debug("no hid device found");
+                        pxt.debug("hid: no device found");
                         return Promise.reject(new Error("no hid device found"));
                     }
-                    pxt.debug(`hid enumerate ${devices.length} devices`);
+                    pxt.debug(`hid: enumerate ${devices.length} devices`);
                     const device = devices[0];
-                    pxt.debug(`hid connect to ${device.name} (${device.id})`);
+                    pxt.debug(`hid: connect to ${device.name} (${device.id})`);
                     return whid.fromIdAsync(device.id, Windows.Storage.FileAccessMode.readWrite);
                 })
                 .then((r: WHID) => {
                     this.dev = r;
                     if (!this.dev) {
-                        pxt.debug("can't connect to hid device");
+                        pxt.debug("hid: can't connect to device");
                         return Promise.reject(new Error("can't connect to hid device"));
                     }
-                    pxt.debug(`hid device version ${this.dev.version}`);
+                    pxt.debug(`hid: device version ${this.dev.version}`);
                     this.dev.addEventListener("inputreportreceived", (e) => {
                         pxt.debug(`input report`)
                         const dr = Windows.Storage.Streams.DataReader.fromBuffer(e.report.data);

@@ -25,7 +25,7 @@ namespace pxt.winrt {
         return typeof Windows !== "undefined";
     }
 
-    export function initAsync(importHexImpl?: (hex: pxt.cpp.HexFile, createNewIfFailed?: boolean) => void) {
+    export function initAsync(editor: pxt.editor.IProjectView, importHexImpl?: (hex: pxt.cpp.HexFile, createNewIfFailed?: boolean) => void) {
         if (!isWinRT()) return Promise.resolve();
 
         const uiCore = Windows.UI.Core;
@@ -33,17 +33,27 @@ namespace pxt.winrt {
         navMgr.onbackrequested = (e) => {
             // Ignore the built-in back button; it tries to back-navigate the sidedoc panel, but it crashes the
             // app if the sidedoc has been closed since the navigation happened
-            console.log("BACK NAVIGATION");
+            pxt.log("app: back navigation");
             navMgr.appViewBackButtonVisibility = uiCore.AppViewBackButtonVisibility.collapsed;
             e.handled = true;
         };
 
         initSerial();
+        const app = Windows.UI.WebUI.WebUIApplication as any;
+        // resume, suspend support
+        app.addEventListener("suspending", function() {
+            pxt.debug(`app suspended`)
+            editor.updateVisibility(false);
+        }, false);
+        app.addEventListener("resuming", function() {
+            pxt.debug(`app resumed`)
+            editor.updateVisibility(false);
+        }, false);
+        // file activatio
         return hasActivationProjectAsync()
             .then(() => {
                 if (importHexImpl) {
                     importHex = importHexImpl;
-                    const app = Windows.UI.WebUI.WebUIApplication as any;
                     app.removeEventListener("activated", initialActivationHandler);
                     app.addEventListener("activated", fileActivationHandler);
                 }

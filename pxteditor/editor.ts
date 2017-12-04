@@ -107,6 +107,7 @@ namespace pxt.editor {
         state: IAppState;
         setState(st: IAppState): void;
         forceUpdate(): void;
+        updateVisibility(active: boolean): void;
 
         openBlocks(): void;
         openJavaScript(giveFocusOnLoading?: boolean): void;

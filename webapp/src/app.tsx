@@ -140,8 +140,7 @@ export class ProjectView
         return !isSandbox && !skipStartScreen && !isProjectRelatedHash(hash);
     }
 
-    updateVisibility() {
-        let active = document.visibilityState == 'visible';
+    updateVisibility(active: boolean) {
         pxt.debug(`page visibility: ${active}`)
         this.setState({ active: active })
         if (!active) {
@@ -1773,7 +1772,7 @@ ${compileService && compileService.githubCorePackage && compileService.gittag ? 
             <div id='root' className={rootClasses}>
                 {hideMenuBar ? undefined :
                     <header className="menubar" role="banner">
-                        {inEditor ? <accessibility.EditorAccessibilityMenu parent={this} highContrast={this.state.highContrast}/> : undefined }
+                        {inEditor ? <accessibility.EditorAccessibilityMenu parent={this} highContrast={this.state.highContrast} /> : undefined}
                         <notification.NotificationBanner parent={this} />
                         <container.MainMenu parent={this} />
                     </header>}
@@ -1782,40 +1781,40 @@ ${compileService && compileService.githubCorePackage && compileService.gittag ? 
                 </div> : undefined}
                 <div id="simulator">
                     <aside id="filelist" className="ui items">
-                        <label htmlFor="boardview" id="boardviewLabel" className="accessible-hidden" aria-hidden="true">{lf("Simulator") }</label>
+                        <label htmlFor="boardview" id="boardviewLabel" className="accessible-hidden" aria-hidden="true">{lf("Simulator")}</label>
                         <div id="boardview" className={`ui vertical editorFloat`} role="region" aria-labelledby="boardviewLabel">
                         </div>
                         <simtoolbar.SimulatorToolbar parent={this} />
                         <div className="ui item portrait hide">
-                            {pxt.options.debug && !this.state.running ? <sui.Button key='debugbtn' class='teal' icon="xicon bug" text={"Sim Debug"} onClick={() => this.runSimulator({ debug: true }) } /> : ''}
-                            {pxt.options.debug ? <sui.Button key='hwdebugbtn' class='teal' icon="xicon chip" text={"Dev Debug"} onClick={() => this.hwDebug() } /> : ''}
+                            {pxt.options.debug && !this.state.running ? <sui.Button key='debugbtn' class='teal' icon="xicon bug" text={"Sim Debug"} onClick={() => this.runSimulator({ debug: true })} /> : ''}
+                            {pxt.options.debug ? <sui.Button key='hwdebugbtn' class='teal' icon="xicon chip" text={"Dev Debug"} onClick={() => this.hwDebug()} /> : ''}
                         </div>
                         {useSerialEditor ?
                             <div id="serialPreview" className="ui editorFloat portrait hide">
-                                <serialindicator.SerialIndicator ref="simIndicator" isSim={true} onClick={() => this.openSerial(true) } />
-                                <serialindicator.SerialIndicator ref="devIndicator" isSim={false} onClick={() => this.openSerial(false) } />
+                                <serialindicator.SerialIndicator ref="simIndicator" isSim={true} onClick={() => this.openSerial(true)} />
+                                <serialindicator.SerialIndicator ref="devIndicator" isSim={false} onClick={() => this.openSerial(false)} />
                             </div> : undefined}
                         {sandbox || isBlocks || this.editor == this.serialEditor ? undefined : <filelist.FileList parent={this} />}
                     </aside>
                 </div>
                 <div id="maineditor" className={sandbox ? "sandbox" : ""} role="main">
-                    {this.allEditors.map(e => e.displayOuter()) }
+                    {this.allEditors.map(e => e.displayOuter())}
                 </div>
                 {inHome ? <div id="homescreen" className="full-abs" role="main">
                     <div className="ui home projectsdialog">
                         <div className="menubar" role="banner">
-                            <accessibility.HomeAccessibilityMenu parent={this} highContrast={this.state.highContrast}/> }
+                            <accessibility.HomeAccessibilityMenu parent={this} highContrast={this.state.highContrast} /> }
                             <projects.ProjectsMenu parent={this} />
                         </div>
                         <projects.Projects parent={this} ref={v => this.home = v} />
                     </div>
-                </div> : undefined }
+                </div> : undefined}
                 {inTutorial ? <tutorial.TutorialHint ref="tutorialhint" parent={this} /> : undefined}
                 {inTutorial ? <tutorial.TutorialContent ref="tutorialcontent" parent={this} /> : undefined}
-                {showEditorToolbar ? <div id="editortools" role="complementary" aria-label={lf("Editor toolbar") }>
+                {showEditorToolbar ? <div id="editortools" role="complementary" aria-label={lf("Editor toolbar")}>
                     <editortoolbar.EditorToolbar ref="editortools" parent={this} />
                 </div> : undefined}
-                {sideDocs ? <container.SideDocs ref="sidedoc" parent={this} sideDocsCollapsed={this.state.sideDocsCollapsed} docsUrl={this.state.sideDocsLoadUrl}/> : undefined}
+                {sideDocs ? <container.SideDocs ref="sidedoc" parent={this} sideDocsCollapsed={this.state.sideDocsCollapsed} docsUrl={this.state.sideDocsLoadUrl} /> : undefined}
                 {sandbox ? undefined : <scriptsearch.ScriptSearch parent={this} ref={v => this.scriptSearch = v} />}
                 {sandbox ? undefined : <extensions.Extensions parent={this} ref={v => this.extensions = v} />}
                 {inHome ? <projects.ImportDialog parent={this} ref={v => this.importDialog = v} /> : undefined}
@@ -1823,7 +1822,7 @@ ${compileService && compileService.githubCorePackage && compileService.gittag ? 
                 {sandbox || !sharingEnabled ? undefined : <share.ShareEditor parent={this} ref={v => this.shareEditor = v} />}
                 {selectLanguage ? <lang.LanguagePicker parent={this} ref={v => this.languagePicker = v} /> : undefined}
                 {sandbox ? <container.SandboxFooter parent={this} /> : undefined}
-                {cookieConsented ? undefined : <container.CookieMessage parent={this} cookieConsented={cookieConsented} cookieKey={cookieKey} /> }
+                {cookieConsented ? undefined : <container.CookieMessage parent={this} cookieConsented={cookieConsented} cookieKey={cookieKey} />}
                 {hideMenuBar ? <div id="editorlogo"><a className="poweredbylogo"></a></div> : undefined}
             </div>
         );
@@ -2006,7 +2005,7 @@ function showIcons() {
     core.confirmAsync({
         header: "Icons",
         htmlBody:
-        usedIcons.map(s => `<i style='font-size:2em' class="ui icon ${s}"></i>&nbsp;${s}&nbsp; `).join("\n")
+            usedIcons.map(s => `<i style='font-size:2em' class="ui icon ${s}"></i>&nbsp;${s}&nbsp; `).join("\n")
     })
 }
 
@@ -2324,7 +2323,7 @@ $(document).ready(() => {
             electron.init();
             return initExtensionsAsync();
         })
-        .then(() => pxt.winrt.initAsync(importHex))
+        .then(() => pxt.winrt.initAsync(this, importHex))
         .then(() => pxt.winrt.hasActivationProjectAsync())
         .then((hasWinRTProject) => {
             const ent = theEditor.settings.fileHistory.filter(e => !!workspace.getHeader(e.id))[0];
@@ -2356,7 +2355,7 @@ $(document).ready(() => {
 
     document.addEventListener("visibilitychange", ev => {
         if (theEditor)
-            theEditor.updateVisibility();
+            theEditor.updateVisibility(document.visibilityState == 'visible');
     });
 
     window.addEventListener("unload", ev => {
