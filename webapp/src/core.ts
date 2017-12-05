@@ -278,7 +278,7 @@ export function dialogAsync(options: DialogOptions): Promise<void> {
         ip.on('change', e => options.inputValue = ip.val())
     }
     let done = false
-    let modalContext = options.modalContext || '#root';
+    let modalContext = options.modalContext || '#dimmerRoot';
     $(modalContext).append(modal)
     if (options.onLoaded) options.onLoaded(modal)
 

@@ -1765,66 +1765,67 @@ ${compileService && compileService.githubCorePackage && compileService.gittag ? 
             !showEditorToolbar ? 'hideEditorToolbar' : '',
             this.state.bannerVisible ? "notificationBannerVisible" : "",
             sandbox && this.isEmbedSimActive() ? 'simView' : '',
-            'full-abs',
-            'dimmable'
+            'full-abs'
         ]);
 
         return (
             <div id='root' className={rootClasses}>
-                {hideMenuBar ? undefined :
-                    <header className="menubar" role="banner">
-                        {inEditor ? <accessibility.EditorAccessibilityMenu parent={this} highContrast={this.state.highContrast}/> : undefined }
-                        <notification.NotificationBanner parent={this} />
-                        <container.MainMenu parent={this} />
-                    </header>}
-                {inTutorial ? <div id="maineditor" className={sandbox ? "sandbox" : ""} role="main">
-                    <tutorial.TutorialCard ref="tutorialcard" parent={this} />
-                </div> : undefined}
-                <div id="simulator">
-                    <aside id="filelist" className="ui items">
-                        <label htmlFor="boardview" id="boardviewLabel" className="accessible-hidden" aria-hidden="true">{lf("Simulator") }</label>
-                        <div id="boardview" className={`ui vertical editorFloat`} role="region" aria-labelledby="boardviewLabel">
-                        </div>
-                        <simtoolbar.SimulatorToolbar parent={this} />
-                        <div className="ui item portrait hide">
-                            {pxt.options.debug && !this.state.running ? <sui.Button key='debugbtn' class='teal' icon="xicon bug" text={"Sim Debug"} onClick={() => this.runSimulator({ debug: true }) } /> : ''}
-                            {pxt.options.debug ? <sui.Button key='hwdebugbtn' class='teal' icon="xicon chip" text={"Dev Debug"} onClick={() => this.hwDebug() } /> : ''}
-                        </div>
-                        {useSerialEditor ?
-                            <div id="serialPreview" className="ui editorFloat portrait hide">
-                                <serialindicator.SerialIndicator ref="simIndicator" isSim={true} onClick={() => this.openSerial(true) } />
-                                <serialindicator.SerialIndicator ref="devIndicator" isSim={false} onClick={() => this.openSerial(false) } />
-                            </div> : undefined}
-                        {sandbox || isBlocks || this.editor == this.serialEditor ? undefined : <filelist.FileList parent={this} />}
-                    </aside>
-                </div>
-                <div id="maineditor" className={sandbox ? "sandbox" : ""} role="main">
-                    {this.allEditors.map(e => e.displayOuter()) }
-                </div>
-                {inHome ? <div id="homescreen" className="full-abs" role="main">
-                    <div className="ui home projectsdialog">
-                        <div className="menubar" role="banner">
-                            <accessibility.HomeAccessibilityMenu parent={this} highContrast={this.state.highContrast}/> }
-                            <projects.ProjectsMenu parent={this} />
-                        </div>
-                        <projects.Projects parent={this} ref={v => this.home = v} />
+                <div id='dimmerRoot'>
+                    {hideMenuBar ? undefined :
+                        <header className="menubar" role="banner">
+                            {inEditor ? <accessibility.EditorAccessibilityMenu parent={this} highContrast={this.state.highContrast}/> : undefined }
+                            <notification.NotificationBanner parent={this} />
+                            <container.MainMenu parent={this} />
+                        </header>}
+                    {inTutorial ? <div id="maineditor" className={sandbox ? "sandbox" : ""} role="main">
+                        <tutorial.TutorialCard ref="tutorialcard" parent={this} />
+                    </div> : undefined}
+                    <div id="simulator">
+                        <aside id="filelist" className="ui items">
+                            <label htmlFor="boardview" id="boardviewLabel" className="accessible-hidden" aria-hidden="true">{lf("Simulator") }</label>
+                            <div id="boardview" className={`ui vertical editorFloat`} role="region" aria-labelledby="boardviewLabel">
+                            </div>
+                            <simtoolbar.SimulatorToolbar parent={this} />
+                            <div className="ui item portrait hide">
+                                {pxt.options.debug && !this.state.running ? <sui.Button key='debugbtn' class='teal' icon="xicon bug" text={"Sim Debug"} onClick={() => this.runSimulator({ debug: true }) } /> : ''}
+                                {pxt.options.debug ? <sui.Button key='hwdebugbtn' class='teal' icon="xicon chip" text={"Dev Debug"} onClick={() => this.hwDebug() } /> : ''}
+                            </div>
+                            {useSerialEditor ?
+                                <div id="serialPreview" className="ui editorFloat portrait hide">
+                                    <serialindicator.SerialIndicator ref="simIndicator" isSim={true} onClick={() => this.openSerial(true) } />
+                                    <serialindicator.SerialIndicator ref="devIndicator" isSim={false} onClick={() => this.openSerial(false) } />
+                                </div> : undefined}
+                            {sandbox || isBlocks || this.editor == this.serialEditor ? undefined : <filelist.FileList parent={this} />}
+                        </aside>
                     </div>
-                </div> : undefined }
-                {inTutorial ? <tutorial.TutorialHint ref="tutorialhint" parent={this} /> : undefined}
-                {inTutorial ? <tutorial.TutorialContent ref="tutorialcontent" parent={this} /> : undefined}
-                {showEditorToolbar ? <div id="editortools" role="complementary" aria-label={lf("Editor toolbar") }>
-                    <editortoolbar.EditorToolbar ref="editortools" parent={this} />
-                </div> : undefined}
-                {sideDocs ? <container.SideDocs ref="sidedoc" parent={this} sideDocsCollapsed={this.state.sideDocsCollapsed} docsUrl={this.state.sideDocsLoadUrl}/> : undefined}
-                {sandbox ? undefined : <scriptsearch.ScriptSearch parent={this} ref={v => this.scriptSearch = v} />}
-                {sandbox ? undefined : <extensions.Extensions parent={this} ref={v => this.extensions = v} />}
-                {inHome ? <projects.ImportDialog parent={this} ref={v => this.importDialog = v} /> : undefined}
-                {sandbox ? undefined : <projects.ExitAndSaveDialog parent={this} ref={v => this.exitAndSaveDialog = v} />}
-                {sandbox || !sharingEnabled ? undefined : <share.ShareEditor parent={this} ref={v => this.shareEditor = v} />}
-                {selectLanguage ? <lang.LanguagePicker parent={this} ref={v => this.languagePicker = v} /> : undefined}
-                {sandbox ? <container.SandboxFooter parent={this} /> : undefined}
-                {cookieConsented ? undefined : <container.CookieMessage parent={this} cookieConsented={cookieConsented} cookieKey={cookieKey} /> }
-                {hideMenuBar ? <div id="editorlogo"><a className="poweredbylogo"></a></div> : undefined}
+                    <div id="maineditor" className={sandbox ? "sandbox" : ""} role="main">
+                        {this.allEditors.map(e => e.displayOuter()) }
+                    </div>
+                    {inHome ? <div id="homescreen" className="full-abs" role="main">
+                        <div className="ui home projectsdialog">
+                            <div className="menubar" role="banner">
+                                <accessibility.HomeAccessibilityMenu parent={this} highContrast={this.state.highContrast}/> }
+                                <projects.ProjectsMenu parent={this} />
+                            </div>
+                            <projects.Projects parent={this} ref={v => this.home = v} />
+                        </div>
+                    </div> : undefined }
+                    {inTutorial ? <tutorial.TutorialHint ref="tutorialhint" parent={this} /> : undefined}
+                    {inTutorial ? <tutorial.TutorialContent ref="tutorialcontent" parent={this} /> : undefined}
+                    {showEditorToolbar ? <div id="editortools" role="complementary" aria-label={lf("Editor toolbar") }>
+                        <editortoolbar.EditorToolbar ref="editortools" parent={this} />
+                    </div> : undefined}
+                    {sideDocs ? <container.SideDocs ref="sidedoc" parent={this} sideDocsCollapsed={this.state.sideDocsCollapsed} docsUrl={this.state.sideDocsLoadUrl}/> : undefined}
+                    {sandbox ? undefined : <scriptsearch.ScriptSearch parent={this} ref={v => this.scriptSearch = v} />}
+                    {sandbox ? undefined : <extensions.Extensions parent={this} ref={v => this.extensions = v} />}
+                    {inHome ? <projects.ImportDialog parent={this} ref={v => this.importDialog = v} /> : undefined}
+                    {sandbox ? undefined : <projects.ExitAndSaveDialog parent={this} ref={v => this.exitAndSaveDialog = v} />}
+                    {sandbox || !sharingEnabled ? undefined : <share.ShareEditor parent={this} ref={v => this.shareEditor = v} />}
+                    {selectLanguage ? <lang.LanguagePicker parent={this} ref={v => this.languagePicker = v} /> : undefined}
+                    {sandbox ? <container.SandboxFooter parent={this} /> : undefined}
+                    {cookieConsented ? undefined : <container.CookieMessage parent={this} cookieConsented={cookieConsented} cookieKey={cookieKey} /> }
+                    {hideMenuBar ? <div id="editorlogo"><a className="poweredbylogo"></a></div> : undefined}
+                </div>
             </div>
         );
     }
